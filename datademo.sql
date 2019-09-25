@@ -190,3 +190,62 @@ WHERE MAHD = 'HD005'
 -- Câu 20: Cho biết ngày gần nhất mà cửa hàng bán được hàng.
 SELECT MAX(NGAY)
 FROM HOADON
+
+-- Câu 1. Cho biết thông tin khách hàng đã mua hóa đơn có mã là HD001. Gồm: Tên khách hàng, địa chỉ, SĐT, email.
+SELECT TENKH, DIACHI, DT, EMAIL
+FROM HOADON HD INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE MAHD = 'HD001'
+
+-- Câu 2. Liệt kê danh sách vật tư được mua trong hóa đơn HD005. Gồm: Tên vật tư, số lượng.
+SELECT TENVT, SL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+WHERE MAHD = 'HD005'
+
+-- Câu 3. Liệt kê danh sách hóa đơn của khách hàng Lê Hoàng Nam. Gồm: Mã hóa đơn, ngày mua.
+SELECT MAHD, NGAY
+FROM HOADON HD INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE TENKH = N'Lê Hoàng Nam'
+
+-- Câu 4. Liệt kê danh sách hóa đơn của các khách hàng ở Bình Chánh. Gồm: Mã hóa đơn, tên khách hàng, SĐT.
+SELECT MAHD, TENKH, DT
+FROM HOADON HD INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE DIACHI = N'Bình Chánh'
+
+-- Câu 5. Liệt kê danh sách khách hàng mua hàng trong ngày 25/05/2015. Gồm: Tên khách hàng.
+SELECT TENKH
+FROM HOADON HD INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE NGAY = '2015-05-25'
+
+-- Câu 6. Liệt kê danh sách vật tư được mua vào ngày 27/12/2015. Gồm: Tên vật tư.
+SELECT DISTINCT TENVT	-- Từ khóa DISTINCT để loại bỏ các dòng kết quả trùng lặp
+FROM
+	HOADON HD INNER JOIN CHITIETHOADON CTHD ON HD.MAHD = CTHD.MAHD
+			  INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+WHERE NGAY = '2015-12-27'
+
+-- Câu 7. Tính tổng số lượng gạch đã bán (tính cả gạch ống và gạch thẻ).
+SELECT SUM(SL) AS TONGSLGACH
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+WHERE TENVT LIKE N'%Gạch%'
+
+-- Câu 8. Tính tổng tiền mà khách hàng Mai Thị Quế Anh đã chi để mua hàng.
+SELECT SUM(SL * GIABAN) AS TONGTIEN
+FROM
+	CHITIETHOADON CTHD INNER JOIN HOADON HD ON CTHD.MAHD = HD.MAHD
+					   INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE TENKH = N'Mai Thị Quế Anh'
+
+-- Câu 9. Tính tổng tiền mà các khách hàng ở Tân Bình đã chi để mua hàng trong tháng 05/2015 và tháng 06/2015.
+SELECT SUM(SL * GIABAN) AS TONGTIEN
+FROM
+	CHITIETHOADON CTHD INNER JOIN HOADON HD ON CTHD.MAHD = HD.MAHD
+					   INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE DIACHI = N'Tân Bình' AND NGAY BETWEEN '2015-05-01' AND '2015-06-30'
+
+-- Câu 10. Liệt kê danh sách vật tư được mua bởi khách hàng Nguyễn Thị Bé. Gồm: Mã vật tư, tên vật tư, đơn vị tính.
+SELECT DISTINCT VT.MAVT, TENVT, DVT
+FROM
+	VATTU VT INNER JOIN CHITIETHOADON CTHD ON VT.MAVT = CTHD.MAVT
+			 INNER JOIN HOADON HD ON CTHD.MAHD = HD.MAHD
+			 INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
+WHERE TENKH = N'Nguyễn Thị Bé'

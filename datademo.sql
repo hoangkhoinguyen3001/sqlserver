@@ -91,3 +91,102 @@ INSERT INTO CHITIETHOADON (MAHD, MAVT, SL, GIABAN) VALUES ('HD012', 'VT01', 20, 
 INSERT INTO CHITIETHOADON (MAHD, MAVT, SL, GIABAN) VALUES ('HD012', 'VT02', 10, 48000);
 INSERT INTO CHITIETHOADON (MAHD, MAVT, SL, GIABAN) VALUES ('HD012', 'VT03', 10000, 150);
 
+-- Câu 1: Liệt kê danh sách vật tư có trong cửa hàng. Gồm: Tất cả thuộc tính.
+SELECT *
+FROM VATTU
+
+-- Câu 2: Liệt kê danh sách vật tư có trong cửa hàng. Gồm: Mã vật tư, tên vật tư.
+SELECT MAVT, TENVT
+FROM VATTU
+
+-- Câu 3: Liệt kê danh sách vật tư có số lượng tồn từ 100.000 trở lên. Gồm: Tất cả thuộc tính.
+SELECT *
+FROM VATTU
+WHERE SLTON >= 100000
+
+-- Câu 4: Liệt kê danh sách vật tư có số lượng tồn từ 100.000 trở lên và giá mua từ 30.000 trở lên. Gồm: Tất cả thuộc tính.
+SELECT *
+FROM VATTU
+WHERE SLTON >= 100000 AND GIAMUA >= 30000
+
+-- Câu 5: Liệt kê những khách hàng sống ở Bình Chánh và Tân Bình. Gồm: Tên khách hàng, địa chỉ.
+SELECT TENKH, DIACHI
+FROM KHACHHANG
+WHERE DIACHI = N'Bình Chánh' OR DIACHI = N'Tân Bình'
+
+-- Câu 6: Đếm số lượng hóa đơn có trong hệ thống.
+SELECT COUNT(*)
+FROM HOADON
+
+-- Câu 7: Đếm số lượng hóa đơn của khách hàng có mã là KH01.
+SELECT COUNT(*)
+FROM HOADON
+WHERE MAKH = 'KH01'
+
+-- Câu 8: Cho biết giá mua cao nhất trong bảng Vật tư.
+SELECT MAX(GIAMUA)
+FROM VATTU
+
+-- Câu 9: Cho biết số lượng tồn kho ít nhất trong bảng Vật tư.
+SELECT MIN(SLTON)
+FROM VATTU
+
+-- Câu 10: Tính tổng số lượng đã bán của vật tư có mã là VT01.
+SELECT SUM(SL)
+FROM CHITIETHOADON
+WHERE MAVT = 'VT01'
+
+-- Câu 11: Liệt kê danh sách hóa đơn được lập trong ngày 25/05/2015. Gồm: Tất cả thuộc tính.
+SELECT *
+FROM HOADON
+WHERE NGAY = '2015-05-25'
+
+-- Câu 12: Liệt kê danh sách hóa đơn được lập trong tháng 05 và tháng 06/2015. Gồm: Tất cả thuộc tính.
+---- Cách 1: Dùng phép so sánh ngày
+SELECT *
+FROM HOADON
+WHERE NGAY >= '2015-05-01' AND NGAY <= '2015-06-30'
+---- Cách 2: Dùng toán tử BETWEEN
+SELECT *
+FROM HOADON
+WHERE NGAY BETWEEN '2015-05-01' AND '2015-06-30'
+---- Cách 3: Dùng hàm MONTH() và YEAR()
+SELECT *
+FROM HOADON
+WHERE (MONTH(NGAY) = 5 OR MONTH(NGAY) = 6) AND YEAR(NGAY) = 2015
+
+-- Câu 13: Tính tổng tiền hàng còn tồn kho. Ghi chú: Tổng tiền hàng vượt quá giới hạn số nguyên (INT) nên cần ép kiểu về số nguyên lớn (BIGINT) trước khi thực hiện tính toán.
+SELECT SUM(CAST(SLTON AS BIGINT) * CAST(GIAMUA AS BIGINT))
+FROM VATTU
+
+-- Câu 14: Tính tổng tiền hàng còn tồn kho với các vật tư là gạch
+SELECT SUM(SLTON * GIAMUA)
+FROM VATTU
+WHERE TENVT LIKE N'%Gạch%'
+
+-- Câu 15: Tính tổng doanh số của cửa hàng.
+SELECT SUM(SL)
+FROM CHITIETHOADON
+
+-- Câu 16: Tính tổng doanh thu của cửa hàng.
+SELECT SUM(SL * GIABAN)
+FROM CHITIETHOADON
+
+-- Câu 17: Liệt kê danh sách khách hàng không có SĐT hoặc Email. Gồm: Tên khách hàng, ĐT, Email.
+SELECT TENKH, DT, EMAIL
+FROM KHACHHANG
+WHERE DT = '' OR EMAIL = ''
+
+-- Câu 18: Liệt kê danh sách khách hàng có tên lót là "Thị". Gồm: Tên khách hàng.
+SELECT TENKH
+FROM KHACHHANG
+WHERE TENKH LIKE N'%Thị%'
+
+-- Câu 19: Cho biết tổng tiền của hóa đơn HD005.
+SELECT SUM(SL * GIABAN)
+FROM CHITIETHOADON
+WHERE MAHD = 'HD005'
+
+-- Câu 20: Cho biết ngày gần nhất mà cửa hàng bán được hàng.
+SELECT MAX(NGAY)
+FROM HOADON

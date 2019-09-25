@@ -249,3 +249,102 @@ FROM
 			 INNER JOIN HOADON HD ON CTHD.MAHD = HD.MAHD
 			 INNER JOIN KHACHHANG KH ON HD.MAKH = KH.MAKH
 WHERE TENKH = N'Nguyễn Thị Bé'
+
+--cau 1: liệt kê danh sách tất cả khách hàng. Gồm mã khách hàng,tên khách hàng,địa chỉ, điện thoại, email
+SELECT *
+FROM KHACHHANG
+--CAU 2:	Liệt kê danh sách tất cả các vật tư. Gồm: Tên vật tư, giá mua, số lượng tồn.
+SELECT TENVT,GIAMUA,SLTON
+FROM VATTU
+--CAU 3: 	Liệt kê danh sách các khách hàng có địa chỉ là "Tân Bình". Gồm: Mã khách hàng, tên khách hàng, địa chỉ, điện thoại và địa chỉ email.
+SELECT *
+FROM KHACHHANG
+WHERE DIACHI = N'TÂN BÌNH'
+--CAU 4: Liệt kê danh sách các khách hàng có địa chỉ là "Bình Chánh". Gồm: Mã khách hàng, tên khách hàng, địa chỉ, điện thoại và địa chỉ email.
+SELECT *
+FROM KHACHHANG
+WHERE DIACHI = N'BÌNH CHÁNH'
+--CAU 5:	Liệt kê danh sách các vật tư có giá mua từ 15.000 trở lên. Gồm: Tất cả thuộc tính.
+FROM VATTU
+WHERE GIAMUA > '15000'
+--CAU 6:	Liệt kê danh sách các vật tư có lượng tồn trên 50.000. Gồm: Tất cả thuộc tính.
+SELECT *
+FROM VATTU
+WHERE SLTON > '50000'
+--CAU 7:	Liệt kê danh sách các khách hàng chưa có SĐT. Gồm: Mã khách hàng, tên khách hàng, địa chỉ và địa chỉ email.
+SELECT MAKH,TENKH,DIACHI,EMAIL
+FROM KHACHHANG
+WHERE DT = ''
+--CAU 8:	Liệt kê danh sách các khách hàng chưa có số điện thoại và cũng chưa có địa chỉ email. Gồm: Mã khách hàng, tên khách hàng, địa chỉ.
+SELECT MAKH,TENKH,DIACHI
+FROM KHACHHANG
+WHERE DT ='' AND EMAIL =''
+--CAU 9:	Liệt kê danh sách các khách hàng đã có số điện thoại và địa chỉ email. Gồm: Mã khách hàng, tên khách hàng, địa chỉ, điện thoại và địa chỉ email.
+SELECT *
+FROM KHACHHANG
+WHERE DT !='' AND EMAIL !=''
+--CAU 10:	Liệt kê danh sách tất cả các vật tư. Gồm: Mã vật tư, tên vật tư, đơn vị tính và giá mua.
+SELECT MAVT,TENVT,DVT,GIAMUA
+FROM VATTU
+--CAU 11:	Liệt kê danh sách các vật tư có đơn vị tính là "Cái". Gồm: Mã vật tư, tên vật tư và giá mua.
+SELECT MAVT,TENVT,GIAMUA
+FROM VATTU
+WHERE DVT =N'CÁI'
+--CAU 12:	Liệt kê danh sách các vật tư có giá mua trên 25.000. Gồm: Mã vật tư, tên vật tư, đơn vị tính và giá mua
+SELECT *
+FROM VATTU
+WHERE GIAMUA > '25000'
+--CAU 13:	Liệt kê danh sách các vật tư là "Gạch" (tính tất cả các loại gạch). Gồm: Mã vật tư, tên vật tư, đơn vị tính và giá mua
+SELECT *
+FROM VATTU
+WHERE TENVT LIKE N'%Gạch%'
+--CAU 14:	Tính tổng số lượng gạch đã bán (tính tất cả các loại gạch)
+SELECT SUM(SL) AS SLGACHBAN
+FROM VATTU VT INNER JOIN CHITIETHOADON CTHD on VT.MAVT = CTHD.MAVT
+WHERE  TENVT LIKE N'%Gạch%'
+--CAU 15:	Liệt kê danh sách các vật tư có giá mua từ 20.000 đến 40.000. Gồm: Mã vật tư, tên vật tư, đơn vị tính và giá mua
+SELECT *
+FROM VATTU
+WHERE GIAMUA BETWEEN 20000 AND 40000
+--CAU 16:	Liệt kê danh sách hóa đơn. Gồm: Mã hoá đơn, ngày lập hoá đơn, tên khách hàng, địa chỉ khách hàng và số điện thoại
+SELECT MAHD,NGAY,DIACHI,DT
+FROM KHACHHANG KH INNER JOIN HOADON HD ON KH.MAKH = HD.MAKH
+--CAU 17:	Liệt kê danh sách hóa đơn trong ngày 25/05/2015. Gồm: Mã hoá đơn, tên khách hàng, địa chỉ khách hàng và số điện thoại
+SELECT MAHD,TENKH,DIACHI,DT
+FROM KHACHHANG KH INNER JOIN HOADON HD ON KH.MAKH = HD.MAKH
+--CAU 18:	Liệt kê danh sách hóa đơn được lập trong tháng 05/2015 và tháng 06/2015. Gồm: Mã hoá đơn, ngày lập hoá đơn, tên khách hàng, địa chỉ khách hàng và số điện thoại
+SELECT MAHD,NGAY,TENKH,DIACHI,DT
+FROM KHACHHANG KH INNER JOIN HOADON HD ON KH.MAKH = HD.MAKH
+WHERE (MONTH(NGAY) = 5 OR MONTH(NGAY) = 6) AND YEAR(NGAY) = 2015
+--CAU 19:	Liệt kê danh sách hóa đơn được mua bởi các khách hàng ở Tân Bình. Gồm: Mã hoá đơn, ngày lập hoá đơn, tên khách hàng, địa chỉ khách hàng và số điện thoại
+SELECT MAHD,NGAY,TENKH,DIACHI,DT
+FROM KHACHHANG KH INNER JOIN HOADON HD ON KH.MAKH = HD.MAKH
+WHERE DIACHI = N'TÂN BÌNH'
+--CAU 20:	Liệt kê danh sách những khách hàng đã mua hàng trong tháng 06/2015. Gồm: Tên khách hàng, số điện thoại và địa chỉ email
+SELECT DISTINCT TENKH,DT,EMAIL
+FROM KHACHHANG KH INNER JOIN HOADON HD ON KH.MAKH = HD.MAKH
+WHERE (MONTH(NGAY) = 6 AND YEAR(NGAY) = 2015)
+--CAU 21:	Liệt kê danh sách hóa đơn của khách hàng Lê Hoàng Nam và Mai Thị Quế Anh. Gồm: Mã hóa đơn, ngày lập hóa đơn, tên khách hàng
+SELECT MAHD,NGAY,TENKH
+FROM KHACHHANG INNER JOIN HOADON HD on KHACHHANG.MAKH = HD.MAKH
+WHERE TENKH = N'Mai Thị Quế Anh' OR TENKH = N'Lê Hoàng Nam'
+--CAU 22:	Liệt kê danh sách hóa đơn của các khách hàng ở Bình Chánh và Quận 10. Gồm: Mã hóa đơn, tên khách hàng, địa chỉ khách hàng
+SELECT MAHD,TENKH,DIACHI
+FROM KHACHHANG INNER JOIN HOADON HD on KHACHHANG.MAKH = HD.MAKH
+WHERE DIACHI = N'Bình Chánh' or DIACHI = N'Quận 10'
+--CAU 23:	Tính tổng tiền mà khách hàng Mai Thị Quế Anh đã chi để mua hàng.
+SELECT SUM(GIABAN) AS TONGTIEN
+FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
+                  INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
+WHERE TENKH = N'Mai Thị Quế Anh'
+--CAU 24:	Tính tổng tiền mà các khách hàng ở Tân Bình đã chi để mua hàng trong tháng 05/2015 và tháng 06/2015
+SELECT SUM(GIABAN) AS TONGTIEN
+FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
+                  INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
+WHERE DIACHI = N'Tân Bình' AND (MONTH(NGAY) = 6 OR MONTH(NGAY) = 5 AND YEAR(NGAY) =2015 )
+--CAU 25:	Liệt kê danh sách vật tư được mua bởi khách hàng Nguyễn Thị Bé. Gồm: Tên vật tư, đơn vị tính, số lượng tồn kho
+SELECT TENVT,SL,DVT
+FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
+                  INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
+                  INNER JOIN VATTU VT on CTHD.MAVT = VT.MAVT
+WHERE TENKH = N'Nguyễn Thị Bé'

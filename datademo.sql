@@ -333,12 +333,12 @@ SELECT MAHD,TENKH,DIACHI
 FROM KHACHHANG INNER JOIN HOADON HD on KHACHHANG.MAKH = HD.MAKH
 WHERE DIACHI = N'Bình Chánh' or DIACHI = N'Quận 10'
 --CAU 23:	Tính tổng tiền mà khách hàng Mai Thị Quế Anh đã chi để mua hàng.
-SELECT SUM(GIABAN) AS TONGTIEN
+SELECT SUM(GIABAN*SL) AS TONGTIEN
 FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
                   INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
 WHERE TENKH = N'Mai Thị Quế Anh'
 --CAU 24:	Tính tổng tiền mà các khách hàng ở Tân Bình đã chi để mua hàng trong tháng 05/2015 và tháng 06/2015
-SELECT SUM(GIABAN) AS TONGTIEN
+SELECT SUM(GIABAN*SL) AS TONGTIEN
 FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
                   INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
 WHERE DIACHI = N'Tân Bình' AND (MONTH(NGAY) = 6 OR MONTH(NGAY) = 5 AND YEAR(NGAY) =2015 )
@@ -348,3 +348,81 @@ FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
                   INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
                   INNER JOIN VATTU VT on CTHD.MAVT = VT.MAVT
 WHERE TENKH = N'Nguyễn Thị Bé'
+
+--CAU 1: Liệt kê mã khách hàng và số lượng hóa đơn mỗi khách hàng đã mua
+SELECT MAKH, COUNT(*) AS SLHD
+FROM HOADON
+GROUP BY MAKH
+
+--CAU 2: Liệt kê ngày và số lượng hóa đơn đã lập của mỗi ngày
+SELECT NGAY, COUNT(*)AS SLHD
+FROM HOADON
+GROUP BY NGAY
+
+--CAU 3: Liệt kê mã vật tư và tổng số lượng đã bán của mỗi vật tư
+SELECT MAVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON
+GROUP BY MAVT
+
+--CAU 4: Liệt kê mã vật tư, tên vật tư và tổng số lượng đã bán của mỗi vật tư
+SELECT VT.MAVT, TENVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+GROUP BY VT.MAVT, TENVT
+
+--CAU 5: Liệt kê mã vật tư, tên vật tư và tổng số lượng đã bán của mỗi vật tư. Chỉ lấy những vật tư có tổng số lượng bán từ 100 trở lên
+SELECT VT.MAVT, TENVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+GROUP BY VT.MAVT, TENVT
+HAVING SUM(SL) >= 100
+
+--CAU 6: Liệt kê mã vật tư, tên vật tư và tổng số lượng đã bán của mỗi loại gạch. Chỉ lấy những vật tư có tổng số lượng bán từ 60000 trở lên
+SELECT VT.MAVT, TENVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+WHERE TENVT LIKE N'Gạch%'
+GROUP BY VT.MAVT, TENVT
+HAVING SUM(SL) >= 60000
+
+--CAU 7: Liệt kê mã vật tư, tên vật tư và tổng số lượng đã bán của mỗi vật tư. Sắp xếp theo tổng số lượng giảm dần và mã vật tư tăng dần
+SELECT VT.MAVT, TENVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+GROUP BY VT.MAVT, TENVT
+ORDER BY TONGSL DESC, MAVT ASC
+
+--CAU 8 Liệt kê mã vật tư, tên vật tư và tổng số lượng đã bán của mỗi vật tư. Sắp xếp theo tổng số lượng giảm dần và mã vật tư tăng dần. Chỉ lấy 3 dòng đầu tiên
+SELECT TOP 3 VT.MAVT, TENVT, SUM(SL) AS TONGSL
+FROM CHITIETHOADON CTHD INNER JOIN VATTU VT ON CTHD.MAVT = VT.MAVT
+GROUP BY VT.MAVT, TENVT
+ORDER BY TONGSL DESC, MAVT ASC
+
+--cau 9: Liệt kê mã khách hàng, tên khách hàng và số lượng hóa đơn mỗi khách hàng đã mua. Chỉ lấy những khách hàng nào mua từ 2 hóa đơn trở lên
+SELECT HD.MAKH,TENKH,COUNT(*) AS SLHD
+FROM HOADON HD INNER JOIN KHACHHANG KH on HD.MAKH = KH.MAKH
+GROUP BY HD.MAKH,TENKH
+HAVING COUNT(*)>1
+
+--CAU 10: Liệt kê mã khách hàng, tên khách hàng và số lượng hóa đơn mỗi khách hàng đã mua. Chỉ lấy những khách hàng nào mua từ 2 hóa đơn trở lên. Sắp xếp theo số lượng hóa đơn giảm dần, mã khách hàng tăng dần
+SELECT HD.MAKH,TENKH,COUNT(*) AS SLHD
+FROM HOADON HD INNER JOIN KHACHHANG KH on HD.MAKH = KH.MAKH
+GROUP BY HD.MAKH,TENKH
+HAVING COUNT(*)>1
+ORDER BY SLHD DESC,HD.MAKH ASC
+
+--CAU 11: Liệt kê mã hóa đơn và tổng tiền cho hóa đơn đó. Sắp xếp theo tổng tiền giảm dần
+SELECT MAHD,SUM(GIABAN*SL) AS TONGTIEN
+FROM CHITIETHOADON
+GROUP BY MAHD
+ORDER BY TONGTIEN DESC
+
+--CAU 12: Liệt kê ngày và tổng doanh thu trong ngày đó. Sắp xếp theo ngày giảm dần
+SELECT NGAY,SUM(SL*GIABAN) AS DOANHTHU
+FROM HOADON HD INNER JOIN CHITIETHOADON C on HD.MAHD = C.MAHD
+GROUP BY NGAY
+ORDER BY NGAY ASC
+
+--CAU 13: Liệt kê tên khách hàng, email, ĐT và tổng tiền đã mua của các khách hàng ở Tân Bình. Chỉ lấy những khách hàng mua trên 6tr. Sắp xếp theo tổng tiền giảm dần
+SELECT TENKH,EMAIL,DT,SUM(SL*GIABAN) AS TONGTIEN
+FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
+                  INNER JOIN CHITIETHOADON CTHD on HD.MAHD = CTHD.MAHD
+WHERE DIACHI =N'Tân Bình'
+GROUP BY TENKH, EMAIL, DT
+

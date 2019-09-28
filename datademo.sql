@@ -426,3 +426,56 @@ FROM KHACHHANG KH INNER JOIN HOADON HD on KH.MAKH = HD.MAKH
 WHERE DIACHI =N'Tân Bình'
 GROUP BY TENKH, EMAIL, DT
 
+--CAU 14: Liệt kê danh sách hóa đơn của khách hàng ở Tân Bình
+SELECT *
+FROM HOADON
+WHERE MAKH IN(
+    SELECT MAKH
+    FROM KHACHHANG
+    WHERE DIACHI = N'Tân Bình'
+)
+-- CAU 15: Liệt kê danh sách hóa đơn của khách hàng ở Tân Bình và Bình Chánh
+SELECT *
+FROM HOADON
+WHERE MAKH IN(
+    SELECT MAKH
+    FROM KHACHHANG
+    WHERE DIACHI = N'Tân Bình' or DIACHI = N'Bình Chánh'
+)
+--CÂU 16: Liệt kê mã khách hàng của những khách hàng chưa từng mua hàng
+SELECT MAKH
+FROM KHACHHANG
+WHERE MAKH NOT IN(
+    SELECT MAKH
+    FROM HOADON
+)
+--CAU 17: Liệt kê danh sách vật tư chưa được ai mua
+SELECT MAVT
+FROM VATTU
+WHERE MAVT NOT IN(
+    SELECT DISTINCT MAVT
+    FROM CHITIETHOADON
+)
+--CAU 18: Cho biết mã hóa đơn được lập trong ngày gần nhất
+SELECT MAHD
+FROM HOADON
+WHERE NGAY IN (
+    SELECT MAX(NGAY)
+    FROM HOADON
+)
+--CAU 19: Cho biết tên vật tư có số lượng tồn ít nhất
+SELECT TENVT
+FROM VATTU
+WHERE SLTON IN (
+    SELECT MIN(SLTON)
+    FROM VATTU
+)
+--CAU 20: Cho biết mã khách hàng mua nhiều hóa đơn nhất
+SELECT MAKH
+FROM HOADON
+GROUP BY MAKH
+HAVING COUNT(*) =(
+    SELECT TOP 1 COUNT(*) AS SLHD
+    FROM HOADON
+    GROUP BY MAKH
+)

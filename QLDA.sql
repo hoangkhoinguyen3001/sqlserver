@@ -145,3 +145,69 @@ ALTER TABLE PHANCONG ADD CONSTRAINT FK_PHANCONG_NHANVIEN FOREIGN KEY (MANV) REFE
 ALTER TABLE PHANCONG ADD CONSTRAINT FK_PHANCONG_CONGVIEC FOREIGN KEY (MADA, STT) REFERENCES CONGVIEC(MADA, STT);
 ---- Thêm ràng buộc khóa ngoại cho bảng THANNHAN
 ALTER TABLE THANNHAN ADD CONSTRAINT FK_THANNHAN_NHANVIEN FOREIGN KEY (MANV) REFERENCES NHANVIEN(MANV);
+
+--CAU 1: Liệt kê danh sách nhân viên làm việc ở phòng số 4.Gồm mã nhân viên , họ tên
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN
+FROM NHANVIEN
+WHERE MAPHONG = '4'
+--CAU 2: Liệt kê danh sách nhân viên có mức lương trên 30.000.Gồm mã nhân viên, họ tên, mức lương
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,LUONG
+FROM NHANVIEN
+WHERE LUONG > 30000
+--CAU 3: Liệt ke danh sách nhân viên có mức lương tren 25000 ở phòng 4 hoặc các cá nhân có mức lương trên 30000 ở phòng 5.Gồm mã nhân viên,họ tên, mã phòng ban,mức lương
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,LUONG,MAPHONG
+FROM NHANVIEN
+WHERE (LUONG > 30000 AND MAPHONG = '5') OR (LUONG > 25000 AND MAPHONG ='4')
+--CAU 4: Liệt kê danh sách nhân viên ở tphcm.Gồm mã nhân viên, họ ten.
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN
+FROM NHANVIEN
+WHERE DIACHI LIKE '%HCM'
+--CAU 5: Liệt kê danh sách nhân viên có họ bắt đầu bằng ký tự N . Gồm mã nhân viên, họ tên
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN
+FROM NHANVIEN
+WHERE HO LIKE 'N%'
+--CAU 6: Cho biết ngày sinh và địa chỉ của nhân viên Đinh Bá Tiến
+SELECT NGAYSINH,DIACHI
+FROM NHANVIEN
+WHERE HO =N'Đinh' and TENLOT = N'Bá' and TEN = N'Tiến'
+--CAU 7: Liệt kê danh sách nhân viên có năm sinh trong khoảng 1960 đến 1965. Gồm mã nhân viên , ngày sinh, họ tên
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,NGAYSINH
+FROM NHANVIEN
+WHERE YEAR(NGAYSINH) BETWEEN 1960 AND 1965
+--CAU 8: Liệt kê danh sách nhân viên. Gồm mã nhân viên, họ tên, địa chỉ, ngày sinh
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI,NGAYSINH
+FROM NHANVIEN
+--CAU 9: Liệt kê danh sách nhân viên. Gồm mã nhân viên, họ tên, địa chỉ, tuổi
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI,2019 - YEAR(NGAYSINH) AS TUỔI
+FROM NHANVIEN
+---------INNER JOIN--------------------
+--CAU 10: Liệt kê danh sách phòng ban. Gồm mã phòng ban, tên phòng ban, địa điểm
+SELECT DA.MAPHONG,TENPHONG,DIADIEM
+FROM PHONGBAN PB INNER JOIN DEAN DA on PB.MAPHONG = DA.MAPHONG
+--CAU 11: Liệt kê danh sách trưởng phòng của từng phòng ban. Gồm họ tên trưởng phòng, tên phòng ban
+SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,TENPHONG
+FROM NHANVIEN NV INNER JOIN PHONGBAN P on NV.MAPHONG = P.MAPHONG
+WHERE MANV ='5' OR MANV = '6' OR MANV = '8'
+--CAU 12: Liệt kê danh sách nhân viên của phòng nghiên cứu . Gồm họ tên , địa chỉ
+SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI
+FROM NHANVIEN
+WHERE MAPHONG = '5'
+--CAU 13: Liệt kê danh sách đề án ở Hà Nội. Gồm tên đề án , tên phòng ban, họ tên và ngày nhận chức của trưởng phòng ban chủ trì đề án đó
+SELECT TENDA,TENPHONG,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,NGAYNHANCHUC
+FROM PHONGBAN PB INNER JOIN DEAN D on PB.MAPHONG = D.MAPHONG
+                 INNER JOIN NHANVIEN N on D.MAPHONG = N.MAPHONG
+WHERE DIADIEM = N'Hà Nội'and MANV = '8'
+--CAU 14: Tìm họ tên những nữ nhân viên, tên người thân của họ và quan hệ với họ
+SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,TENTN,QUANHE
+FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV
+WHERE NV.PHAI = '1'
+--CAU 15: Với mỗi nhân viên,cho biết họ tên nhân viên và họ tên người quản lý trực tiếp của người đó
+SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL
+FROM NHANVIEN N1,NHANVIEN N2
+WHERE (N1.MANV_QUANLY = N2.MANV)
+--CAU 16: Với mỗi nhân viên, cho biết họ tên của nhân viên, họ tên người truỏng phòng và họ tên người quản lý trực tiếp của nhân viên đó
+SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL,(N3.HO + ' ' + N3.TENLOT + ' ' + N3.TEN) AS HOTENTRUONGPHONG
+FROM NHANVIEN N1,NHANVIEN N2,NHANVIEN N3,PHONGBAN
+WHERE ((N1.MANV_QUANLY = N2.MANV) AND (N3.MANV = PHONGBAN.MANV_TRUONGPHONG) AND (PHONGBAN.MAPHONG = N1.MAPHONG) )
+--CAU 17: Tên những nhân viên phòng số 5 có tham gia vào đề án sản phẩm x và nhân viên này do Nguyễn Thanh Tùng quản lý trục tiếp
+

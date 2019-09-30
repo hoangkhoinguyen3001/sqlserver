@@ -221,3 +221,42 @@ SELECT HO,TENLOT,TEN,TENDA
 FROM NHANVIEN,PHONGBAN,DEAN
 WHERE NHANVIEN.MAPHONG = '5' AND PHONGBAN.MAPHONG ='5' AND DEAN.MAPHONG = '5'
       AND NHANVIEN.HO = N'Đinh' and NHANVIEN.TENLOT = N'Bá' and NHANVIEN.TEN = N'Tiến'
+--CAU 19: Cho biết số lượng đề án của công ty
+SELECT COUNT(*) AS SLDA
+FROM DEAN
+--CAU 2O: Cho biết số lượng đề án của phòng nghiên cứu chủ trì
+SELECT COUNT(*) AS SLDA
+FROM DEAN INNER JOIN PHONGBAN P on DEAN.MAPHONG = P.MAPHONG
+WHERE TENPHONG = N'Nghiên cứu'
+GROUP BY TENPHONG
+--CAU 21: Cho biết mức lương trung bình của các nữ nhân viên
+SELECT AVG(LUONG)
+FROM NHANVIEN
+WHERE PHAI = '1'
+GROUP BY PHAI
+--CAU 22: Cho biết số thân nhân của nhân viên Đinh Bá Tiến
+SELECT COUNT(TENTN)
+FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV
+WHERE HO =N'Đinh' and TENLOT =N'Bá' and TEN = N'Tiến'
+GROUP BY T.MANV
+--CAU 23: Với mỗi đề án, liệt kê tên dự án và tổng số giờ làm việc một tuần của tất cả các nhân viên tham gia đề án đó
+SELECT TENDA, SUM(THOIGIAN) AS TONGGIO
+FROM PHANCONG INNER JOIN DEAN D on PHANCONG.MADA = D.MADA
+GROUP BY TENDA
+ORDER BY TENDA ASC
+--CAU 24: Với mỗi đề án, cho biết tên đề án và số nhân viên tham gia đề án đó
+SELECT TENDA, COUNT(MANV) AS SONVTHAMGIA
+FROM DEAN INNER JOIN PHANCONG P on DEAN.MADA = P.MADA
+GROUP BY TENDA
+ORDER BY TENDA ASC
+--CAU 25: Với mỗi nhân viên, cho biết họ tên nhân viên và số lượng thân nhân của nhân viên đó
+SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTENNV,COUNT(TENTN) AS SOTHANNHAN
+FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV
+GROUP BY HO + ' ' + TENLOT + ' ' + TEN
+--CAU 26: Với mỗi nhân viên, cho biết họ tên nhân viên và số lượng đề án mà nhân viên đó tham gia
+SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTENNV,COUNT(P.MANV)
+FROM NHANVIEN NV INNER JOIN PHANCONG P on NV.MANV = P.MANV
+GROUP BY HO + ' ' + TENLOT + ' ' + TEN
+--CAU 27: Với mỗi nhân viên, cho biết số lượng nhân viên mà nhân viên đó quản lý trực tiếp
+
+

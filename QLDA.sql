@@ -210,4 +210,14 @@ SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TE
 FROM NHANVIEN N1,NHANVIEN N2,NHANVIEN N3,PHONGBAN
 WHERE ((N1.MANV_QUANLY = N2.MANV) AND (N3.MANV = PHONGBAN.MANV_TRUONGPHONG) AND (PHONGBAN.MAPHONG = N1.MAPHONG) )
 --CAU 17: Tên những nhân viên phòng số 5 có tham gia vào đề án sản phẩm x và nhân viên này do Nguyễn Thanh Tùng quản lý trục tiếp
-
+SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL
+FROM NHANVIEN N1, NHANVIEN N2,DEAN,PHANCONG
+WHERE DEAN.TENDA like '%X' and DEAN.MADA = PHANCONG.MADA
+      AND N1.MANV = PHANCONG.MANV AND N1.MAPHONG = '5'
+      AND N1.MANV_QUANLY = N2.MANV AND N2.HO = N'Nguyễn'
+      and N2.TENLOT = 'Thanh' and N2.TEN = 'Tùng'
+--CAU 18: Cho biết tên các đề án mà nhân viên Đinh Bá Tiến đã tham gia ..https://www.slideshare.net/hai150289/hd-th-sql-servertuan5nkhanh
+SELECT HO,TENLOT,TEN,TENDA
+FROM NHANVIEN,PHONGBAN,DEAN
+WHERE NHANVIEN.MAPHONG = '5' AND PHONGBAN.MAPHONG ='5' AND DEAN.MAPHONG = '5'
+      AND NHANVIEN.HO = N'Đinh' and NHANVIEN.TENLOT = N'Bá' and NHANVIEN.TEN = N'Tiến'

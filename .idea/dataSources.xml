@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="jdbc:sqlserver://localhost\SFQUYGOPR0IKIJS\SQLEXPRESS:49420;database=QLVATTU" uuid="7de9baa2-b305-478b-9d87-2c20f743e0f3">
+    <data-source source="LOCAL" name="jdbc:sqlserver://localhost\SFQUYGOPR0IKIJS\SQLEXPRESS:51026;database=QLvattu" uuid="00dec473-7330-4567-bbc1-69a192eaefbd">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://localhost\SFQUYGOPR0IKIJS\SQLEXPRESS:49420;database=QLVATTU</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://localhost\SFQUYGOPR0IKIJS\SQLEXPRESS:51026;database=QLvattu</jdbc-url>
       <driver-properties>
         <property name="applicationName" value="DataGrip" />
       </driver-properties>

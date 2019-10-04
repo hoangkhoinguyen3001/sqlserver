@@ -178,49 +178,47 @@ WHERE YEAR(NGAYSINH) BETWEEN 1960 AND 1965
 SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI,NGAYSINH
 FROM NHANVIEN
 --CAU 9: Liệt kê danh sách nhân viên. Gồm mã nhân viên, họ tên, địa chỉ, tuổi
-SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI,2019 - YEAR(NGAYSINH) AS TUỔI
+SELECT MANV,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI,YEAR(GETDATE()) - YEAR(NGAYSINH) AS TUỔI
 FROM NHANVIEN
 ---------INNER JOIN--------------------
 --CAU 10: Liệt kê danh sách phòng ban. Gồm mã phòng ban, tên phòng ban, địa điểm
-SELECT DA.MAPHONG,TENPHONG,DIADIEM
-FROM PHONGBAN PB INNER JOIN DEAN DA on PB.MAPHONG = DA.MAPHONG
+SELECT DDP.MAPHONG,TENPHONG,DIADIEM
+FROM PHONGBAN PB INNER JOIN DIADIEMPHONG DDP on PB.MAPHONG = DDP.MAPHONG
 --CAU 11: Liệt kê danh sách trưởng phòng của từng phòng ban. Gồm họ tên trưởng phòng, tên phòng ban
 SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,TENPHONG
-FROM NHANVIEN NV INNER JOIN PHONGBAN P on NV.MAPHONG = P.MAPHONG
-WHERE MANV ='5' OR MANV = '6' OR MANV = '8'
+FROM NHANVIEN NV INNER JOIN PHONGBAN P on NV.MANV = P.MANV_TRUONGPHONG
 --CAU 12: Liệt kê danh sách nhân viên của phòng nghiên cứu . Gồm họ tên , địa chỉ
 SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,DIACHI
-FROM NHANVIEN
-WHERE MAPHONG = '5'
+FROM NHANVIEN NV INNER JOIN PHONGBAN P on NV.MAPHONG = P.MAPHONG
+WHERE TENPHONG = N'Nghiên cứu'
 --CAU 13: Liệt kê danh sách đề án ở Hà Nội. Gồm tên đề án , tên phòng ban, họ tên và ngày nhận chức của trưởng phòng ban chủ trì đề án đó
 SELECT TENDA,TENPHONG,HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,NGAYNHANCHUC
-FROM PHONGBAN PB INNER JOIN DEAN D on PB.MAPHONG = D.MAPHONG
-                 INNER JOIN NHANVIEN N on D.MAPHONG = N.MAPHONG
-WHERE DIADIEM = N'Hà Nội'and MANV = '8'
+FROM DEAN D INNER JOIN PHONGBAN P on D.MAPHONG = P.MAPHONG
+                 INNER JOIN NHANVIEN NV ON P.MANV_TRUONGPHONG  = NV.MANV
+WHERE DIADIEM = N'Hà Nội'
 --CAU 14: Tìm họ tên những nữ nhân viên, tên người thân của họ và quan hệ với họ
 SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTEN,TENTN,QUANHE
 FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV
-WHERE NV.PHAI = '1'
+WHERE NV.PHAI = 1
 --CAU 15: Với mỗi nhân viên,cho biết họ tên nhân viên và họ tên người quản lý trực tiếp của người đó
 SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL
-FROM NHANVIEN N1,NHANVIEN N2
-WHERE (N1.MANV_QUANLY = N2.MANV)
+FROM NHANVIEN N1 LEFT JOIN NHANVIEN N2 ON N1.MANV_QUANLY = N2.MANV
 --CAU 16: Với mỗi nhân viên, cho biết họ tên của nhân viên, họ tên người truỏng phòng và họ tên người quản lý trực tiếp của nhân viên đó
 SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL,(N3.HO + ' ' + N3.TENLOT + ' ' + N3.TEN) AS HOTENTRUONGPHONG
-FROM NHANVIEN N1,NHANVIEN N2,NHANVIEN N3,PHONGBAN
-WHERE ((N1.MANV_QUANLY = N2.MANV) AND (N3.MANV = PHONGBAN.MANV_TRUONGPHONG) AND (PHONGBAN.MAPHONG = N1.MAPHONG) )
+FROM NHANVIEN N1 LEFT JOIN NHANVIEN N2 ON N1.MANV_QUANLY = N2.MANV
+                INNER JOIN PHONGBAN P on N1.MAPHONG = P.MAPHONG
+                INNER JOIN NHANVIEN N3 ON P.MANV_TRUONGPHONG = N3.MANV
 --CAU 17: Tên những nhân viên phòng số 5 có tham gia vào đề án sản phẩm x và nhân viên này do Nguyễn Thanh Tùng quản lý trục tiếp
-SELECT (N1.HO + ' ' + N1.TENLOT + ' ' + N1.TEN) AS HOTENNV ,(N2.HO + ' ' + N2.TENLOT + ' ' + N2.TEN) AS HOTENQL
-FROM NHANVIEN N1, NHANVIEN N2,DEAN,PHANCONG
-WHERE DEAN.TENDA like '%X' and DEAN.MADA = PHANCONG.MADA
-      AND N1.MANV = PHANCONG.MANV AND N1.MAPHONG = '5'
-      AND N1.MANV_QUANLY = N2.MANV AND N2.HO = N'Nguyễn'
-      and N2.TENLOT = 'Thanh' and N2.TEN = 'Tùng'
+SELECT NV.HO + ' ' + NV.TENLOT + ' ' + NV.TEN AS HOTENNV
+FROM NHANVIEN NV INNER JOIN PHANCONG P on NV.MANV = P.MANV
+                INNER JOIN NHANVIEN QL ON NV.MANV_QUANLY = QL.MANV
+                INNER JOIN DEAN D on NV.MAPHONG = D.MAPHONG
+WHERE NV.MAPHONG = 5 AND TENDA =N'Sản phẩm X' AND QL.HO =N'Nguyễn' and QL.TENLOT =N'Thanh' and QL.TEN = N'Tùng'
 --CAU 18: Cho biết tên các đề án mà nhân viên Đinh Bá Tiến đã tham gia ..https://www.slideshare.net/hai150289/hd-th-sql-servertuan5nkhanh
-SELECT HO,TENLOT,TEN,TENDA
-FROM NHANVIEN,PHONGBAN,DEAN
-WHERE NHANVIEN.MAPHONG = '5' AND PHONGBAN.MAPHONG ='5' AND DEAN.MAPHONG = '5'
-      AND NHANVIEN.HO = N'Đinh' and NHANVIEN.TENLOT = N'Bá' and NHANVIEN.TEN = N'Tiến'
+SELECT TENDA
+FROM DEAN DA INNER JOIN PHANCONG P on DA.MADA = P.MADA
+            INNER JOIN NHANVIEN N on DA.MAPHONG = N.MAPHONG
+WHERE HO  + ' ' + TENLOT  + ' ' + TEN  = N'Đinh Bá Tiến'
 --CAU 19: Cho biết số lượng đề án của công ty
 SELECT COUNT(*) AS SLDA
 FROM DEAN
@@ -232,23 +230,19 @@ GROUP BY TENPHONG
 --CAU 21: Cho biết mức lương trung bình của các nữ nhân viên
 SELECT AVG(LUONG)
 FROM NHANVIEN
-WHERE PHAI = '1'
-GROUP BY PHAI
+WHERE PHAI = 1
 --CAU 22: Cho biết số thân nhân của nhân viên Đinh Bá Tiến
-SELECT COUNT(TENTN)
+SELECT COUNT(*)
 FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV
 WHERE HO =N'Đinh' and TENLOT =N'Bá' and TEN = N'Tiến'
-GROUP BY T.MANV
 --CAU 23: Với mỗi đề án, liệt kê tên dự án và tổng số giờ làm việc một tuần của tất cả các nhân viên tham gia đề án đó
 SELECT TENDA, SUM(THOIGIAN) AS TONGGIO
 FROM PHANCONG INNER JOIN DEAN D on PHANCONG.MADA = D.MADA
 GROUP BY TENDA
-ORDER BY TENDA ASC
 --CAU 24: Với mỗi đề án, cho biết tên đề án và số nhân viên tham gia đề án đó
 SELECT TENDA, COUNT(MANV) AS SONVTHAMGIA
 FROM DEAN INNER JOIN PHANCONG P on DEAN.MADA = P.MADA
 GROUP BY TENDA
-ORDER BY TENDA ASC
 --CAU 25: Với mỗi nhân viên, cho biết họ tên nhân viên và số lượng thân nhân của nhân viên đó
 SELECT HO + ' ' + TENLOT + ' ' + TEN AS HOTENNV,COUNT(TENTN) AS SOTHANNHAN
 FROM NHANVIEN NV INNER JOIN THANNHAN T on NV.MANV = T.MANV

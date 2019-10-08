@@ -103,3 +103,57 @@ INSERT INTO SanPham (MaSP, TenSP, ThongTin, GiaTien, SoLuongTonKho, MaLoaiSP, An
 INSERT INTO SanPham (MaSP, TenSP, ThongTin, GiaTien, SoLuongTonKho, MaLoaiSP, AnhMinhHoa, TrangThai) VALUES ('SP010', N'Em sẽ đến cùng cơn mưa', N'Ichikawa Takuji', 56000, 64, 'LSP005', 'SP010.jpg', 1)
 INSERT INTO SanPham (MaSP, TenSP, ThongTin, GiaTien, SoLuongTonKho, MaLoaiSP, AnhMinhHoa, TrangThai) VALUES ('SP011', N'Quẳng gánh lo đi mà vui sống', N'Dale Carnegie', 45000, 120, 'LSP006', 'SP011.jpg', 1)
 INSERT INTO SanPham (MaSP, TenSP, ThongTin, GiaTien, SoLuongTonKho, MaLoaiSP, AnhMinhHoa, TrangThai) VALUES ('SP012', N'Mình nói gì khi nói về hạnh phúc?', N'Rosie Nguyễn', 36000, 46, 'LSP005', 'SP012.jpg', 1)
+
+--BAI 1:
+CREATE PROCEDURE LAYDANHSACHSANPHAM(@GIAMIN INT = 0,@GIAMAX INT = 9999999,@TENSP NVARCHAR(MAX) = N' ',@THONGTIN NVARCHAR(MAX) = N' ',@SLTONMIN INT = 0,@SLTONMAX INT = 999,@MALOAISP VARCHAR(20)= N' ')
+AS
+BEGIN
+    SELECT *
+    FROM SanPham
+    WHERE GiaTien >= @GIAMIN AND GiaTien <= @GIAMAX
+    AND TenSP like  '%' + @TENSP + '%'
+    AND ThongTin like '%' + @THONGTIN + '%'
+    AND SoLuongTonKho >= @SLTONMIN AND SoLuongTonKho <= @SLTONMAX
+    AND SanPham.MaLoaiSP like '%' + @MALOAISP + '%'
+end
+
+EXEC LAYDANHSACHSANPHAM 42000,57000,cá,'',0,99,003
+--BAI 2:CẬP NHẬT SLTONKHO CHO SẢN PHẨM KHI CẬP NHẬT SỐ LƯỢNG TRONG BẢNG CHITIETHOADON
+/*CREATE TRIGGER TRG_CAPNHATSLTONKHO
+    ON CTHoaDon
+    AFTER UPDATE
+    AS
+    BEGIN
+        UPDATE SanPham
+        set SoLuongTonKho = SoLuongTonKho + (
+            select sum(SoLuong)
+            from deleted
+            where MaSP = SanPham.MaSP
+            ) - (
+                select sum(SoLuong)
+                from inserted
+                where MaSP = SanPham.MaSP
+            )
+        from SanPham inner join deleted on SanPham.MaSP = deleted.MaSP
+                    inner join inserted on SanPham.MaSP =inserted.MaSP
+    end*/
+--BAI 2: CẬP NHẬT TỔNG TIỀN HÓA ĐƠN KHI THÊM,SỬA,XÓA 1 DÒNG TRONG BẢNG CTHOADON
+/*CREATE TRIGGER TRG_CAPNHATTONGTIENCTHD
+    ON CTHoaDon
+    AFTER UPDATE
+    AS
+    BEGIN
+        UPDATE HoaDon
+        set TongTien = TongTien - (
+            select sum(SoLuong*DonGia)
+            from deleted
+            where MaHD = HoaDon.MaHD
+            ) + (
+                select sum(SoLuong*DonGia)
+                from inserted
+                where MaHD = HoaDon.MaHD
+            )
+        from HoaDon inner join deleted on HoaDon.MaHD = deleted.MaHD
+                    inner join inserted on HoaDon.MaHD =inserted.MaHD
+    end
+ */
